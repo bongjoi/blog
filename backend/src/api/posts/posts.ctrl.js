@@ -53,9 +53,32 @@ exports.write = async (ctx) => {
  * @route   GET /api/posts
  */
 exports.list = async (ctx) => {
+  // query는 문자열이기 때문에 숫자로 변환
+  // 값이 주어지지 않았다면 1을 기본값으로 사용
+  const page = parseInt(ctx.query.page || '1', 10)
+
+  if (page < 1) {
+    ctx.status = 400
+    return
+  }
+
   try {
-    const posts = await Post.find().exec()
-    ctx.body = posts
+    const posts = await Post.find()
+      .sort({ _id: -1 }) // 1이면 오름차순, -1이면 내림차순
+      .limit(10) // 보여줄 포스트 개수 제한
+      .skip((page - 1) * 10) // 페이지당 10개씩 넘기기
+      .lean() // 데이터를 JSON 형태로 조회 가능
+      .exec()
+
+    // 커스텀 헤더 설정
+    const postCount = await Post.estimatedDocumentCount().exec()
+    ctx.set('Last-Page', Math.ceil(postCount / 10))
+
+    ctx.body = posts.map((post) => ({
+      ...post,
+      body:
+        post.body.length < 200 ? post.body : `${post.body.slice(0, 200)} ...`
+    }))
   } catch (err) {
     ctx.throw(500, err)
   }
