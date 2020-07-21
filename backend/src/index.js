@@ -5,6 +5,7 @@ const bodyParser = require('koa-bodyparser')
 const mongoose = require('mongoose')
 
 const api = require('./api')
+// const createFakeData = require('./createFakeData')
 
 // 데이터베이스 연결
 mongoose
@@ -16,6 +17,7 @@ mongoose
   })
   .then(() => {
     console.log('Connected to MongoDB')
+    // createFakeData()
   })
   .catch((err) => {
     console.error(err)
