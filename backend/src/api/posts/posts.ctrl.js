@@ -72,7 +72,7 @@ exports.write = async (ctx) => {
 
 /**
  * @desc    포스트 목록 조회
- * @route   GET /api/posts
+ * @route   GET /api/posts?username=&tag=&page=
  */
 exports.list = async (ctx) => {
   // query는 문자열이기 때문에 숫자로 변환
@@ -84,8 +84,15 @@ exports.list = async (ctx) => {
     return
   }
 
+  const { tag, username } = ctx.query
+  // tag, username 값이 유효하면 객체 안에 넣고, 그렇지 않으면 넣지 않음
+  const query = {
+    ...(username ? { 'user.username': username } : {}),
+    ...(tag ? { tags: tag } : {})
+  }
+
   try {
-    const posts = await Post.find()
+    const posts = await Post.find(query)
       .sort({ _id: -1 }) // 1이면 오름차순, -1이면 내림차순
       .limit(10) // 보여줄 포스트 개수 제한
       .skip((page - 1) * 10) // 페이지당 10개씩 넘기기
@@ -93,7 +100,7 @@ exports.list = async (ctx) => {
       .exec()
 
     // 커스텀 헤더 설정
-    const postCount = await Post.estimatedDocumentCount().exec()
+    const postCount = await Post.estimatedDocumentCount(query).exec()
     ctx.set('Last-Page', Math.ceil(postCount / 10))
 
     ctx.body = posts.map((post) => ({
