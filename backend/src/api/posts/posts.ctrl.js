@@ -5,10 +5,31 @@ const Joi = require('@hapi/joi')
 const { ObjectId } = mongoose.Types
 
 // Middleware
-exports.checkObjectId = (ctx, next) => {
+exports.getPostById = async (ctx, next) => {
   const { id } = ctx.params
+  // id가 ObjectId 타입인지 검사
   if (!ObjectId.isValid(id)) {
     ctx.status = 400
+    return
+  }
+  try {
+    const post = await Post.findById(id).exec()
+    // 포스트가 존재하지 않을 때
+    if (!post) {
+      ctx.status = 404 // Not Found
+      return
+    }
+    ctx.state.post = post
+    return next()
+  } catch (err) {
+    ctx.throw(500, err)
+  }
+}
+
+exports.checkOwnPost = (ctx, next) => {
+  const { user, post } = ctx.state
+  if (post.user._id.toString() !== user._id) {
+    ctx.status = 403 // Forbidden: The server understood the request but refuses to authorize it.
     return
   }
   return next()
@@ -89,18 +110,8 @@ exports.list = async (ctx) => {
  * @desc    특정 포스트 조회
  * @route   GET /api/posts/:id
  */
-exports.read = async (ctx) => {
-  const { id } = ctx.params
-  try {
-    const post = await Post.findById(id).exec()
-    if (!post) {
-      ctx.status = 404
-      return
-    }
-    ctx.body = post
-  } catch (err) {
-    ctx.throw(500, err)
-  }
+exports.read = (ctx) => {
+  ctx.body = ctx.state.post
 }
 
 /**
