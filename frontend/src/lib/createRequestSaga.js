@@ -17,7 +17,8 @@ export default function createRequestSaga(type, request) {
       const response = yield call(request, action.payload)
       yield put({
         type: SUCCESS,
-        payload: response.data
+        payload: response.data,
+        meta: response // HTTP 헤더 및 상태 코드 조회 가능
       })
     } catch (err) {
       yield put({
