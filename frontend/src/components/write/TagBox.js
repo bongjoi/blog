@@ -111,6 +111,11 @@ const TagBox = ({ tags, onChangeTags }) => {
     [input, insertTag]
   )
 
+  // tags 값이 바뀔 때
+  useEffect(() => {
+    setLocalTags(tags)
+  }, [tags])
+
   return (
     <TagBoxBlock>
       <h4>태그</h4>
