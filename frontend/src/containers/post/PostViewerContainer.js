@@ -4,14 +4,18 @@ import { withRouter } from 'react-router-dom'
 import { readPost, unloadPost } from '../../modules/post'
 import PostViewer from '../../components/post/PostViewer'
 import PostActionButtons from '../../components/post/PostActionButtons'
+import { setOriginalPost } from '../../modules/write'
 
-const PostViewerContainer = ({ match }) => {
+const PostViewerContainer = ({ match, history }) => {
   const dispatch = useDispatch()
-  const { post, error, loading } = useSelector(({ post, loading }) => ({
-    post: post.post,
-    error: post.error,
-    loading: loading['post/READ_POST']
-  }))
+  const { post, error, loading, user } = useSelector(
+    ({ post, loading, user }) => ({
+      post: post.post,
+      error: post.error,
+      loading: loading['post/READ_POST'],
+      user: user.user
+    })
+  )
   const { postId } = match.params
 
   // 처음 마운트 될 때 포스트 읽기 API 요청
@@ -23,12 +27,18 @@ const PostViewerContainer = ({ match }) => {
     }
   }, [dispatch, postId])
 
+  const onEdit = () => {
+    dispatch(setOriginalPost(post))
+    history.push('/write')
+  }
+
   return (
     <PostViewer
       post={post}
       loading={loading}
       error={error}
-      actionButtons={<PostActionButtons />}
+      actionButtons={<PostActionButtons onEdit={onEdit} />}
+      ownPost={user && user.id === post && post.id}
     />
   )
 }
