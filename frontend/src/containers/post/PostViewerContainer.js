@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { readPost, unloadPost } from '../../modules/post'
 import PostViewer from '../../components/post/PostViewer'
+import PostActionButtons from '../../components/post/PostActionButtons'
 
 const PostViewerContainer = ({ match }) => {
   const dispatch = useDispatch()
@@ -22,7 +23,14 @@ const PostViewerContainer = ({ match }) => {
     }
   }, [dispatch, postId])
 
-  return <PostViewer post={post} loading={loading} error={error} />
+  return (
+    <PostViewer
+      post={post}
+      loading={loading}
+      error={error}
+      actionButtons={<PostActionButtons />}
+    />
+  )
 }
 
 export default withRouter(PostViewerContainer)
