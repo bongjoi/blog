@@ -16,7 +16,7 @@ const TagBoxBlock = styled.div`
 
 const TagForm = styled.form`
   display: flex;
-  width: 280px;
+  width: 290px;
   border: 1px solid ${palette.gray[9]};
   border-radius: 4px;
   overflow: hidden;
@@ -61,9 +61,7 @@ const TagListBlock = styled.div`
 `
 
 // React.memo를 사용하여 tag값이 바뀔 때만 리렌더링 되도록 처리
-const TagItem = React.memo(({ tag, onRemove }) => (
-  <Tag onClick={() => onRemove(tag)}>#{tag}</Tag>
-))
+const TagItem = React.memo(({ tag, onRemove }) => <Tag onClick={() => onRemove(tag)}>#{tag}</Tag>)
 
 // React.memo를 사용하여 tags값이 바뀔 때만 리렌더링 되도록 처리
 const TagList = React.memo(({ tags, onRemove }) => (
@@ -86,7 +84,7 @@ const TagBox = ({ tags, onChangeTags }) => {
       setLocalTags(nextTags)
       onChangeTags(nextTags)
     },
-    [localTags, onChangeTags]
+    [localTags, onChangeTags],
   )
 
   const onRemove = useCallback(
@@ -95,7 +93,7 @@ const TagBox = ({ tags, onChangeTags }) => {
       setLocalTags(nextTags)
       onChangeTags(nextTags)
     },
-    [localTags, onChangeTags]
+    [localTags, onChangeTags],
   )
 
   const onChange = useCallback((e) => {
@@ -108,7 +106,7 @@ const TagBox = ({ tags, onChangeTags }) => {
       insertTag(input.trim())
       setInput('')
     },
-    [input, insertTag]
+    [input, insertTag],
   )
 
   // tags 값이 바뀔 때
@@ -120,11 +118,7 @@ const TagBox = ({ tags, onChangeTags }) => {
     <TagBoxBlock>
       <h4>태그</h4>
       <TagForm onSubmit={onSubmit}>
-        <input
-          placeholder="태그를 입력하세요"
-          value={input}
-          onChange={onChange}
-        />
+        <input placeholder="태그를 입력하세요" value={input} onChange={onChange} />
         <button type="submit">추가</button>
       </TagForm>
       <TagList tags={localTags} onRemove={onRemove} />
