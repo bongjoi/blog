@@ -1,0 +1,16 @@
+{
+  "name": "react-blog",
+  "version": "1.0.0",
+  "description": "react blog",
+  "main": "index.js",
+  "engines": {
+    "node": "12.18.2",
+    "npm": "6.14.5"
+  },
+  "scripts": {
+    "start": "node backend/index.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=true npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "author": "bongjoi",
+  "license": "ISC"
+}
